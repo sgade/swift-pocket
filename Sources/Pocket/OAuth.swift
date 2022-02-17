@@ -20,7 +20,14 @@ extension Pocket {
 
     private struct ObtainAccessTokenResponse: Decodable {
 
-        let access_token: String
+        public enum CodingKeys: String, CodingKey {
+
+            case accessToken = "access_token"
+            case username
+
+        }
+
+        let accessToken: String
         let username: String
 
     }
@@ -31,7 +38,7 @@ extension Pocket {
 
 extension Pocket {
 
-    private func obtainRequestToken(using redirectUrl: URL) throws -> String {
+    public func obtainRequestToken(forRedirectingTo redirectUrl: URL) throws -> String {
         let data = [
             "consumer_key": consumerKey,
             "redirect_uri": redirectUrl.absoluteString
@@ -42,30 +49,28 @@ extension Pocket {
         return response.code
     }
 
-    public func obtainAccessToken(using redirectUrl: URL) throws {
-        let requestToken = try obtainRequestToken(using: redirectUrl)
-
+    public func buildAuthorizationUrl(for requestToken: String, redirectingTo redirectUrl: URL) -> URL {
         var requestUrlComponents = URLComponents(string: "https://getpocket.com/auth/authorize")!
         requestUrlComponents.queryItems = [
             URLQueryItem(name: "request_token", value: requestToken),
             URLQueryItem(name: "redirect_uri", value: redirectUrl.absoluteString)
         ]
-        let requestUrl = requestUrlComponents.url!
+        return requestUrlComponents.url!
+    }
 
-        let redirectUrlComponents = URLComponents(url: redirectUrl, resolvingAgainstBaseURL: false)!
-        let webServer = WebServer(on: UInt16(redirectUrlComponents.port ?? 0), at: redirectUrlComponents.path)
-        try webServer.start()
-        print("Please open URL \(requestUrl.absoluteString) and login.")
-        webServer.waitForCallback()
-
+    @discardableResult
+    public func obtainAccessToken(for requestToken: String) throws -> String {
         let authorizeUrl = URL(string: "https://getpocket.com/v3/oauth/authorize")!
         let data = [
             "consumer_key": consumerKey,
             "code": requestToken
         ]
+
         let authorizeResponse: ObtainAccessTokenResponse = try request(url: authorizeUrl, jsonData: data)
-        accessToken = authorizeResponse.access_token
+        accessToken = authorizeResponse.accessToken
         username = authorizeResponse.username
+
+        return authorizeResponse.accessToken
     }
 
 }

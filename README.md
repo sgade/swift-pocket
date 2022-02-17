@@ -5,19 +5,38 @@
 ## Usage
 
 Before you can use the API, you need to [obtain a consumer key](http://getpocket.com/developer/apps/new).
-You can start using the package by creating a new `Pocket` instance:
+You can start using the package by creating a new `Pocket` instance and passing your consumer key:
 
 ```swift
 let pocket = Pocket(consumerKey: "...")
 ```
 
-Next, the instance needs to be authenticated with the user's account:
+### Authorization
+
+The instance needs to be authenticated with the user's account. This is done via the user's consent in the browser.
+
+1. Obtain a request token that you can later use to obtain your access token.
+2. Listen on the redirect url you provided to notice when the authorization has been granted by the user.
+3. Direct the user to the authorization url.
+4. You can obtain your access token.
 
 ```swift
-try pocket.obtainAccessToken(using: redirectUrl)
+// (1)
+let requestToken = try pocket.obtainRequestToken(forRedirectingTo: redirectUrl)
+// (2)
+// Listen on your redirectUrl, e.g. "http://localhost:44444/callback" using a local webserver
+// (3)
+let authorizationUrl = pocket.buildAuthorizationUrl(for: requestToken, redirectingTo: redirectUrl)
+// (4)
+let accessToken = try pocket.obtainAccessToken(for: requestToken)
 ```
 
 Using that instance, you can invoke actions against the api.
+
+### Saving the access token for future use
+
+You can retrieve the access token from the `accessToken` property.
+Use this to save and restore the token for future uses.
 
 ### Add an item to the queue
 

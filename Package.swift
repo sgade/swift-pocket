@@ -16,15 +16,11 @@ let package = Package(
     products: [
         .library(name: "Pocket", targets: ["Pocket"]),
     ],
-    dependencies: [
-        .package(url: "https://github.com/httpswift/swifter", from: "1.5.0")
-    ],
+    dependencies: [],
     targets: [
         .target(
             name: "Pocket",
-            dependencies: [
-                .product(name: "Swifter", package: "swifter")
-            ]
+            dependencies: []
         ),
         .testTarget(
             name: "PocketTests",
