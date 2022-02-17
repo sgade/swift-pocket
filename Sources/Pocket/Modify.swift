@@ -54,42 +54,58 @@ extension Pocket {
 
 extension Pocket {
 
-    private func sendRequest(_ url: URL, actions: [SendItemAction]) throws -> SendResponse {
-        let actionsJSON = try JSONEncoder().encode(actions)
-
+    private func sendRequest(_ url: URL, actions: [SendItemAction], completion: @escaping (Result<SendResponse, Error>) -> Void) {
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
-        components.queryItems = [
-            URLQueryItem(name: "actions", value: String(data: actionsJSON, encoding: .utf8)!),
-            URLQueryItem(name: "consumer_key", value: consumerKey),
-            URLQueryItem(name: "access_token", value: accessToken ?? "")
-        ]
+
+        do {
+            let actionsJSON = try JSONEncoder().encode(actions)
+
+            components.queryItems = [
+                URLQueryItem(name: "actions", value: String(data: actionsJSON, encoding: .utf8)!),
+                URLQueryItem(name: "consumer_key", value: consumerKey),
+                URLQueryItem(name: "access_token", value: accessToken ?? "")
+            ]
+        } catch {
+            return completion(.failure(error))
+        }
 
         var request = URLRequest(url: URL(string: components.string!)!)
         request.httpMethod = "GET"
         request.setValue("application/json", forHTTPHeaderField: "X-Accept")
 
-        let group = DispatchGroup()
-        group.enter()
-
-        var body = Data()
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            defer { group.leave() }
+            guard error == nil else {
+                return completion(.failure(error!))
+            }
+            guard let data = data else {
+                return completion(.failure(Errors.unsuccessfulResponse))
+            }
 
-            guard let data = data else { return }
-            body = data
+            do {
+                let body = try JSONDecoder().decode(SendResponse.self, from: data)
+                completion(.success(body))
+            } catch {
+                completion(.failure(error))
+            }
         }
         task.resume()
-        group.wait()
-
-        return try JSONDecoder().decode(SendResponse.self, from: body)
     }
 
-    private func send(action: ActionType, for itemId: String) throws {
+    private func send(action: ActionType, for itemId: String, completion: @escaping (Result<Void, Error>) -> Void) {
         let data = [SendItemAction(action: action, itemId: itemId)]
         let url = URL(string: "https://getpocket.com/v3/send")!
-        let result = try sendRequest(url, actions: data)
 
-        guard result.status == .success else { throw Errors.unsuccessfulResponse }
+        sendRequest(url, actions: data) { result in
+            switch result {
+            case .success(let response):
+                guard response.status == .success else {
+                    return completion(.failure(Errors.unsuccessfulResponse))
+                }
+                return completion(.success(()))
+            case .failure(let error):
+                return completion(.failure(error))
+            }
+        }
     }
 
 }
@@ -98,8 +114,14 @@ extension Pocket {
 
 extension Pocket {
 
-    public func archive(itemId: String) throws {
-        return try send(action: .archive, for: itemId)
+    public func archive(itemId: String) async throws {
+        try await withCheckedThrowingContinuation { continuation in
+            archive(itemId: itemId, completion: continuation.resume(with:))
+        }
+    }
+
+    public func archive(itemId: String, completion: @escaping (Result<Void, Error>) -> Void) {
+        send(action: .archive, for: itemId, completion: completion)
     }
 
 }

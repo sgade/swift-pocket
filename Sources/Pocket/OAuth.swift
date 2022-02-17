@@ -38,15 +38,21 @@ extension Pocket {
 
 extension Pocket {
 
-    public func obtainRequestToken(forRedirectingTo redirectUrl: URL) throws -> String {
+    public func obtainRequestToken(forRedirectingTo redirectUrl: URL, completion: @escaping (Result<String, Error>) -> Void) {
         let data = [
             "consumer_key": consumerKey,
             "redirect_uri": redirectUrl.absoluteString
         ]
         let url = URL(string: "https://getpocket.com/v3/oauth/request")!
-        let response: ObtainRequestTokenResponse = try request(url: url, jsonData: data)
 
-        return response.code
+        request(url: url, jsonData: data) { (result: Result<ObtainRequestTokenResponse, Error>) in
+            switch result {
+            case .success(let response):
+                return completion(.success(response.code))
+            case .failure(let error):
+                return completion(.failure(error))
+            }
+        }
     }
 
     public func buildAuthorizationUrl(for requestToken: String, redirectingTo redirectUrl: URL) -> URL {
@@ -58,19 +64,23 @@ extension Pocket {
         return requestUrlComponents.url!
     }
 
-    @discardableResult
-    public func obtainAccessToken(for requestToken: String) throws -> String {
+    public func obtainAccessToken(for requestToken: String, completion: @escaping (Result<String, Error>) -> Void) {
         let authorizeUrl = URL(string: "https://getpocket.com/v3/oauth/authorize")!
         let data = [
             "consumer_key": consumerKey,
             "code": requestToken
         ]
 
-        let authorizeResponse: ObtainAccessTokenResponse = try request(url: authorizeUrl, jsonData: data)
-        accessToken = authorizeResponse.accessToken
-        username = authorizeResponse.username
-
-        return authorizeResponse.accessToken
+        request(url: authorizeUrl, jsonData: data) { (result: Result<ObtainAccessTokenResponse, Error>) in
+            switch result {
+            case .success(let response):
+                self.accessToken = response.accessToken
+                self.username = response.username
+                return completion(.success(response.accessToken))
+            case .failure(let error):
+                return completion(.failure(error))
+            }
+        }
     }
 
 }

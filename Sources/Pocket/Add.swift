@@ -42,11 +42,17 @@ extension Pocket {
 extension Pocket {
 
     @discardableResult
-    public func add(with parameters: AddParameters) throws -> Item {
+    public func add(with parameters: AddParameters) async throws -> Item {
+        try await withCheckedThrowingContinuation { continuation in
+            add(with: parameters, completion: continuation.resume)
+        }
+    }
+
+    public func add(with parameters: AddParameters, completion: @escaping (Result<Item, Error>) -> Void) {
         guard let escapedUrl = parameters.url
                 .absoluteString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
         else {
-            throw Errors.invalid(value: parameters.url, parameter: "url")
+            return completion(.failure(Errors.invalid(value: parameters.url, parameter: "url")))
         }
 
         var data = [
@@ -63,8 +69,14 @@ extension Pocket {
         }
 
         let url = URL(string: "https://getpocket.com/v3/add")!
-        let response: AddResponse = try requestAuthenticated(url: url, data: data)
-        return response.item
+        requestAuthenticated(url: url, data: data) { (result: Result<AddResponse, Error>) in
+            switch result {
+            case .success(let response):
+                return completion(.success(response.item))
+            case .failure(let error):
+                return completion(.failure(error))
+            }
+        }
     }
 
 }

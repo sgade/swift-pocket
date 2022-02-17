@@ -129,7 +129,13 @@ extension Pocket {
 
 extension Pocket {
 
-    public func retrieve(with parameters: RetrieveParameters) throws -> [Item] {
+    public func retrieve(with parameters: RetrieveParameters) async throws -> [Item] {
+        try await withCheckedThrowingContinuation { continuation in
+            retrieve(with: parameters, completion: continuation.resume)
+        }
+    }
+
+    public func retrieve(with parameters: RetrieveParameters, completion: @escaping (Result<[Item], Error>) -> Void) {
         var data: [String: String] = [:]
         data["detailType"] = parameters.detailType?.rawValue ?? RetrieveParameters.DetailType.complex.rawValue
 
@@ -177,8 +183,14 @@ extension Pocket {
         }
 
         let url = URL(string: "https://getpocket.com/v3/get")!
-        let response: GetResponse = try requestAuthenticated(url: url, data: data)
-        return response.items
+        requestAuthenticated(url: url, data: data) { (result: Result<GetResponse, Error>) in
+            switch result {
+            case .success(let response):
+                completion(.success(response.items))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
     }
 
 }

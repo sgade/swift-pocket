@@ -16,6 +16,7 @@ extension Pocket {
         case invalid(value: Any, parameter: String)
         case notAuthenticated
         case unsuccessfulResponse
+        case network(Error)
         case response(status: Int, code: Int, message: String)
         case serverDownForMaintenance
 
