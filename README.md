@@ -68,3 +68,7 @@ Using the Swift Package Manager, add this line to your `Package.swift` as a depe
 ```swift
     .package(url: "https://github.com/sgade/swift-pocket", from: "1.0.0"),
 ```
+
+## License
+
+See `LICENSE` file.
