@@ -1,34 +1,40 @@
 //
-//  Item.swift
+//  AddedItem.swift
 //  Pocket
 //
-//  Created by Sören Gade on 28.10.21.
+//  Created by Sören Gade on 19.02.22.
 //
 
 
 import Foundation
 
 
-/// An item from the Pocket queue.
+/// An item that was added to the Pocket queue.
 ///
-/// The documentation and item setup is taken from the [Pocket developer documentation](https://getpocket.com/developer/docs/v3/retrieve).
-public struct Item: Decodable {
+/// The documentation and item setup is taken from the [Pocket developer documentation](https://getpocket.com/developer/docs/v3/add).
+public struct AddedItem: Decodable {
 
     private enum CodingKeys: String, CodingKey {
 
         case id             = "item_id"
+        case normalUrl      = "normal_url"
         case resolvedId     = "resolved_id"
-        case givenUrl       = "given_url"
         case resolvedUrl    = "resolved_url"
-        case givenTitle     = "given_title"
-        case resolvedTitle  = "resolved_title"
-        case isFavorite     = "favorite"
-        case status
+        case domainId       = "domain_id"
+        case originDomainId = "origin_domain_id"
+        case responseCode   = "response_code"
+        case mimeType       = "mime_type"
+        case contentLength  = "content_length"
+        case encoding
+        case dateResolved   = "date_resolved"
+        case datePublished  = "date_published"
+        case title
         case excerpt
-        case isArticle      = "is_article"
+        case wordCount      = "word_count"
         case hasImage       = "has_image"
         case hasVideo       = "has_video"
-        case wordCount      = "word_count"
+        case isIndex        = "is_index"
+        case isArticle      = "is_article"
         case authors
         case images
         case videos
@@ -113,51 +119,63 @@ public struct Item: Decodable {
 
     }
 
-    /// A unique identifier matching the saved item. This id must be used to perform any actions through
-    /// the [v3/modify](https://getpocket.com/developer/docs/v3/modify) endpoint.
-    public let id: StringInt
+    /// A unique identifier matching the added item.
+    public let id: Int
 
-    /// A unique identifier similar to the item `id` but is unique to the actual url of the saved item.
-    ///
-    /// The `resolvedId` identifies unique urls. For example a direct link to a New York Times article and a link
-    /// that redirects (ex a shortened bit.ly url) to the same article will share the same `resolvedId`. If this value
-    /// is `0`, it means that Pocket has not processed the item. Normally this happens within seconds but is possible
-    /// you may request the item before it has been resolved.
+    /// The original url for the added item.
+    public let normalUrl: String
+
+    /// A unique identifier for the resolved item.
     public let resolvedId: StringInt
 
-    /// The actual url that was saved with the item. This url should be used if the user wants to view the item.
-    public let givenUrl: String
-
-    /// The final url of the item. For example if the item was a shortened bit.ly link, this will be the actual article
-    /// the url linked to.
+    /// The resolved url for the added item. The easiest way to think about the `resolvedUrl` - if you add a bit.ly
+    /// link, the `resolvedUrl` will be the url of the page the bit.ly link points to.
     public let resolvedUrl: String
 
-    /// The title that was saved along with the item.
-    public let givenTitle: String
+    /// A unique identifier for the domain of the `resolvedUrl`.
+    public let domainId: StringInt
 
-    /// The title that Pocket found for the item when it was parsed.
-    public let resolvedTitle: String
+    /// A unique identifier for the domain of the `normalUrl`.
+    public let originDomainId: StringInt
 
-    /// If the item is favorited.
-    public let isFavorite: StringBool
+    /// The response code received by the Pocket parser when it tried to access the item.
+    public let responseCode: StringInt
 
-    /// If the item is archived or if the item should be deleted.
-    public let status: Status
+    /// The MIME type returned by the item.
+    public let mimeType: String
 
-    /// The first few lines of the item (articles only).
+    /// The content length of the item.
+    public let contentLength: Int
+
+    /// The encoding of the item.
+    public let encoding: String
+
+    /// The date the item was resolved.
+    public let dateResolved: String
+
+    /// The date the item was published (if the parser was able to find one).
+    public let datePublished: String
+
+    /// The title of the `resolvedUrl`.
+    public let title: String
+
+    /// The excerpt of the `resolvedUrl`.
     public let excerpt: String
 
-    /// If the item is an article.
-    public let isArticle: StringBool
+    /// For an article, the number of words.
+    public let wordCount: StringInt
 
-    /// If the item has images in it or if the item is an image.
+    /// If the item has an image in the body of the article or if the item is an image.
     public let hasImage: AssetInformation
 
-    /// If the item has videos in it or if the item is a video.
+    /// If the item has a video in the body of the article or if the item is a video.
     public let hasVideo: AssetInformation
 
-    /// How many words are in the article.
-    public let wordCount: StringInt
+    /// True, if the parser thinks this item is an index page.
+    public let isIndex: StringBool
+
+    /// True, if the parser thinks this item is an article.
+    public let isArticle: StringBool
 
     /// All of the authors associated with the item.
     public let authors: NumberedArray<Author>? // TODO: replace this with custom coding logic to replace it with a simple array

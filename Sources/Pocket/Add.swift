@@ -30,7 +30,7 @@ extension Pocket {
 
     private struct AddResponse: Decodable {
 
-        public let item: Item
+        public let item: AddedItem
         public let status: String
 
     }
@@ -42,13 +42,13 @@ extension Pocket {
 extension Pocket {
 
     @discardableResult
-    public func add(with parameters: AddParameters) async throws -> Item {
+    public func add(with parameters: AddParameters) async throws -> AddedItem {
         try await withCheckedThrowingContinuation { continuation in
             add(with: parameters, completion: continuation.resume)
         }
     }
 
-    public func add(with parameters: AddParameters, completion: @escaping (Result<Item, Error>) -> Void) {
+    public func add(with parameters: AddParameters, completion: @escaping (Result<AddedItem, Error>) -> Void) {
         guard let escapedUrl = parameters.url
                 .absoluteString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
         else {
