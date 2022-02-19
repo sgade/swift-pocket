@@ -50,7 +50,7 @@ extension Pocket {
         public enum DetailType: String {
 
             case simple
-            case complex
+            case complete
 
         }
 
@@ -137,7 +137,7 @@ extension Pocket {
 
     public func retrieve(with parameters: RetrieveParameters, completion: @escaping (Result<[Item], Error>) -> Void) {
         var data: [String: String] = [:]
-        data["detailType"] = parameters.detailType?.rawValue ?? RetrieveParameters.DetailType.complex.rawValue
+        data["detailType"] = parameters.detailType?.rawValue ?? RetrieveParameters.DetailType.complete.rawValue
 
         if let state = parameters.state {
             data["state"] = state.rawValue
