@@ -14,7 +14,7 @@ import Foundation
 /// The documentation and item setup is taken from the [Pocket developer documentation](https://getpocket.com/developer/docs/v3/retrieve).
 public struct Item: Codable {
 
-    public enum CodingKeys: String, CodingKey {
+    private enum CodingKeys: String, CodingKey {
 
         case id             = "item_id"
         case resolvedId     = "resolved_id"
@@ -22,16 +22,17 @@ public struct Item: Codable {
         case resolvedUrl    = "resolved_url"
         case givenTitle     = "given_title"
         case resolvedTitle  = "resolved_title"
+        case isFavorite     = "favorite"
 
     }
 
     /// A unique identifier matching the saved item. This id must be used to perform any actions through
     /// the [v3/modify](https://getpocket.com/developer/docs/v3/modify) endpoint.
     public let id: String
-    /// A unique identifier similar to the item_id but is unique to the actual url of the saved item.
+    /// A unique identifier similar to the item `id` but is unique to the actual url of the saved item.
     ///
-    /// The resolved_id identifies unique urls. For example a direct link to a New York Times article and a link that redirects (ex a shortened bit.ly url)
-    /// to the same article will share the same resolved_id. If this value is 0, it means that Pocket has not processed the item. Normally this happens
+    /// The `resolvedId` identifies unique urls. For example a direct link to a New York Times article and a link that redirects (ex a shortened bit.ly url)
+    /// to the same article will share the same `resolvedId`. If this value is `0`, it means that Pocket has not processed the item. Normally this happens
     /// within seconds but is possible you may request the item before it has been resolved.
     public let resolvedId: String
     /// The actual url that was saved with the item. This url should be used if the user wants to view the item.

@@ -20,7 +20,7 @@ extension Pocket {
 
     private struct ObtainAccessTokenResponse: Decodable {
 
-        public enum CodingKeys: String, CodingKey {
+        private enum CodingKeys: String, CodingKey {
 
             case accessToken = "access_token"
             case username
