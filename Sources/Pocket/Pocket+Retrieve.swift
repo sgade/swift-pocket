@@ -1,5 +1,5 @@
 //
-//  Retrieve.swift
+//  Pocket+Retrieve.swift
 //  Pocket
 //
 //  Created by Sören Gade on 28.10.21.
@@ -11,6 +11,8 @@ import Foundation
 // MARK: - Serialization data structures
 
 extension Pocket {
+
+    public static let retrieveUrl = URL(string: "https://getpocket.com/v3/get")!
 
     public struct RetrieveParameters {
 
@@ -164,8 +166,7 @@ extension Pocket {
             data["offset"] = "\(offset)"
         }
 
-        let url = URL(string: "https://getpocket.com/v3/get")!
-        requestAuthenticated(url: url, data: data) { (result: Result<GetResponse, Error>) in
+        requestAuthenticated(url: Pocket.retrieveUrl, data: data) { (result: Result<GetResponse, Error>) in
             switch result {
             case .success(let response):
                 completion(.success(response.items))

@@ -1,5 +1,5 @@
 //
-//  Modify.swift
+//  Pocket+Modify.swift
 //  Pocket
 //
 //  Created by Sören Gade on 28.10.21.
@@ -11,6 +11,8 @@ import Foundation
 // MARK: - Serialization data structures
 
 extension Pocket {
+
+    public static let modifyUrl = URL(string: "https://getpocket.com/v3/send")!
 
     private enum ActionType: String, Encodable {
 
@@ -93,9 +95,8 @@ extension Pocket {
 
     private func send(action: ActionType, for itemId: String, completion: @escaping (Result<Void, Error>) -> Void) {
         let data = [SendItemAction(action: action, itemId: itemId)]
-        let url = URL(string: "https://getpocket.com/v3/send")!
 
-        sendRequest(url, actions: data) { result in
+        sendRequest(Pocket.modifyUrl, actions: data) { result in
             switch result {
             case .success(let response):
                 guard response.status == .success else {

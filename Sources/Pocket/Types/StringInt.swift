@@ -25,6 +25,8 @@ extension StringInt: ExpressibleByStringLiteral {
 
 }
 
+// MARK: - CustomStringConvertible
+
 extension StringInt: CustomStringConvertible {
 
     public var description: String {

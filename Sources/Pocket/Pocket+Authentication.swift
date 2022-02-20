@@ -1,5 +1,5 @@
 //
-//  OAth.swift
+//  Pocket+Authentication.swift
 //  Pocket
 //
 //  Created by Sören Gade on 28.10.21.
@@ -11,6 +11,9 @@ import Foundation
 // MARK: - Serialization data structures
 
 extension Pocket {
+
+    public static let requestTokenUrl = URL(string: "https://getpocket.com/v3/oauth/request")!
+    public static let authorizeUrl = URL(string: "https://getpocket.com/v3/oauth/authorize")!
 
     private struct ObtainRequestTokenResponse: Decodable {
 
@@ -49,9 +52,8 @@ extension Pocket {
             "consumer_key": consumerKey,
             "redirect_uri": redirectUrl.absoluteString
         ]
-        let url = URL(string: "https://getpocket.com/v3/oauth/request")!
 
-        request(url: url, jsonData: data) { (result: Result<ObtainRequestTokenResponse, Error>) in
+        request(url: Pocket.requestTokenUrl, jsonData: data) { (result: Result<ObtainRequestTokenResponse, Error>) in
             switch result {
             case .success(let response):
                 return completion(.success(response.code))
@@ -61,13 +63,16 @@ extension Pocket {
         }
     }
 
-    public func buildAuthorizationUrl(for requestToken: String, redirectingTo redirectUrl: URL) -> URL {
-        var requestUrlComponents = URLComponents(string: "https://getpocket.com/auth/authorize")!
+    public func buildAuthorizationUrl(for requestToken: String, redirectingTo redirectUrl: URL) -> URL? {
+        guard var requestUrlComponents = URLComponents(url: Pocket.authorizeUrl, resolvingAgainstBaseURL: true) else {
+            return nil
+        }
+
         requestUrlComponents.queryItems = [
             URLQueryItem(name: "request_token", value: requestToken),
             URLQueryItem(name: "redirect_uri", value: redirectUrl.absoluteString)
         ]
-        return requestUrlComponents.url!
+        return requestUrlComponents.url
     }
 
     public func obtainAccessToken(for requestToken: String) async throws -> String {
@@ -77,13 +82,12 @@ extension Pocket {
     }
 
     public func obtainAccessToken(for requestToken: String, completion: @escaping (Result<String, Error>) -> Void) {
-        let authorizeUrl = URL(string: "https://getpocket.com/v3/oauth/authorize")!
         let data = [
             "consumer_key": consumerKey,
             "code": requestToken
         ]
 
-        request(url: authorizeUrl, jsonData: data) { (result: Result<ObtainAccessTokenResponse, Error>) in
+        request(url: Pocket.authorizeUrl, jsonData: data) { (result: Result<ObtainAccessTokenResponse, Error>) in
             switch result {
             case .success(let response):
                 self.accessToken = response.accessToken

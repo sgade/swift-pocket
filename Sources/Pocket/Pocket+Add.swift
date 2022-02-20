@@ -1,5 +1,5 @@
 //
-//  Add.swift
+//  Pocket+Add.swift
 //  Pocket
 //
 //  Created by Sören Gade on 31.10.21.
@@ -11,6 +11,8 @@ import Foundation
 // MARK: - Serialization data structures
 
 extension Pocket {
+
+    public static let addUrl = URL(string: "https://getpocket.com/v3/add")!
 
     public struct AddParameters {
 
@@ -68,8 +70,7 @@ extension Pocket {
             data["tweet_id"] = tweetId
         }
 
-        let url = URL(string: "https://getpocket.com/v3/add")!
-        requestAuthenticated(url: url, data: data) { (result: Result<AddResponse, Error>) in
+        requestAuthenticated(url: Pocket.addUrl, data: data) { (result: Result<AddResponse, Error>) in
             switch result {
             case .success(let response):
                 return completion(.success(response.item))

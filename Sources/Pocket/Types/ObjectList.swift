@@ -9,7 +9,7 @@
 import Foundation
 
 
-/// A list that is represented as an JSON object when it has values.
+/// A list that is represented as a JSON object when it has values.
 ///
 /// If a list has values, its format looks like this:
 /// ```json
@@ -21,11 +21,21 @@ import Foundation
 ///
 /// However, if the list does not contain any values, it is represented as an empty array:
 /// ```json
-///[]
+/// []
 /// ```
 public struct ObjectList<T> {
 
     public let values: [T]
+
+}
+
+// MARK: - ExpressibleByArrayLiteral
+
+extension ObjectList: ExpressibleByArrayLiteral {
+
+    public init(arrayLiteral elements: T...) {
+        values = elements
+    }
 
 }
 

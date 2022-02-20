@@ -11,6 +11,9 @@ import Foundation
 
 public struct StringBool {
 
+    public static let trueValue = "1"
+    public static let falseValue = "0"
+
     private let value: Bool
 
 }
@@ -25,6 +28,16 @@ extension StringBool: ExpressibleByBooleanLiteral {
 
 }
 
+// MARK: - CustomStringConvertible
+
+extension StringBool: CustomStringConvertible {
+
+    public var description: String {
+        value ? StringBool.trueValue : StringBool.falseValue
+    }
+
+}
+
 // MARK: - Decodable
 
 extension StringBool: Decodable {
@@ -32,7 +45,7 @@ extension StringBool: Decodable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let stringValue = try container.decode(String.self)
-        value = stringValue == "1"
+        value = stringValue == StringBool.trueValue
     }
 
 }
@@ -43,7 +56,7 @@ extension StringBool: Encodable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
-        try container.encode(value ? "1" : "0")
+        try container.encode(description)
     }
 
 }
