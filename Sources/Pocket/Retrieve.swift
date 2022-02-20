@@ -50,7 +50,7 @@ extension Pocket {
         public enum DetailType: String {
 
             case simple
-            case complex
+            case complete
 
         }
 
@@ -95,6 +95,7 @@ extension Pocket {
         // MARK: Custom parse logic
 
         private struct ItemList: Decodable {
+
             let values: [Item]
 
             init(from decoder: Decoder) throws {
@@ -103,11 +104,17 @@ extension Pocket {
                     // if we have items, they are returned in a dictionary...
                     let dict = try container.decode([String: Item].self)
                     values = dict.map { $0.value }
-                } catch {
+                } catch DecodingError.typeMismatch(let type, let context) {
                     // ...however, if there are no items, the field type is (empty) array
+                    guard type == [String: Item].self else {
+                        // throw error if not for this specfic type
+                        throw DecodingError.typeMismatch(type, context)
+                    }
+
                     values = (try? container.decode([Item].self)) ?? []
                 }
             }
+
         }
 
         private let list: ItemList
@@ -137,7 +144,7 @@ extension Pocket {
 
     public func retrieve(with parameters: RetrieveParameters, completion: @escaping (Result<[Item], Error>) -> Void) {
         var data: [String: String] = [:]
-        data["detailType"] = parameters.detailType?.rawValue ?? RetrieveParameters.DetailType.complex.rawValue
+        data["detailType"] = parameters.detailType?.rawValue ?? RetrieveParameters.DetailType.complete.rawValue
 
         if let state = parameters.state {
             data["state"] = state.rawValue

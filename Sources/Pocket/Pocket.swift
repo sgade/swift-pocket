@@ -67,9 +67,9 @@ extension Pocket {
 
             do {
                 let body = try JSONDecoder().decode(T.self, from: data)
-                completion(.success(body))
+                return completion(.success(body))
             } catch {
-                completion(.failure(error))
+                return completion(.failure(error))
             }
         }
         task.resume()

@@ -22,7 +22,7 @@ extension Pocket {
 
     private struct SendItemAction: Encodable {
 
-        public enum CodingKeys: String, CodingKey {
+        private enum CodingKeys: String, CodingKey {
 
             case action
             case itemId = "item_id"
