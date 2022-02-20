@@ -61,14 +61,12 @@ public struct AddedItem: Decodable {
 
         private enum CodingKeys: String, CodingKey {
 
-            case id         = "item_id"
             case authorId   = "author_id"
             case name
             case url
 
         }
 
-        public let id: StringInt
         public let authorId: StringInt
         public let name: String
         public let url: String
@@ -120,7 +118,7 @@ public struct AddedItem: Decodable {
     }
 
     /// A unique identifier matching the added item.
-    public let id: Int
+    public let id: StringInt
 
     /// The original url for the added item.
     public let normalUrl: String
@@ -145,7 +143,7 @@ public struct AddedItem: Decodable {
     public let mimeType: String
 
     /// The content length of the item.
-    public let contentLength: Int
+    public let contentLength: StringInt
 
     /// The encoding of the item.
     public let encoding: String
@@ -178,12 +176,12 @@ public struct AddedItem: Decodable {
     public let isArticle: StringBool
 
     /// All of the authors associated with the item.
-    public let authors: NumberedArray<Author>? // TODO: replace this with custom coding logic to replace it with a simple array
+    public let authors: ObjectList<Author> // TODO: replace this with custom coding logic to replace it with a simple array
 
     /// All of the images associated with the item.
-    public let images: NumberedArray<Image>? // TODO: replace this with custom coding logic to replace it with a simple array
+    public let images: ObjectList<Image> // TODO: replace this with custom coding logic to replace it with a simple array
 
     /// All of the videos associated with the item.
-    public let videos: NumberedArray<Video>? // TODO: replace this with custom coding logic to replace it with a simple array
+    public let videos: ObjectList<Video> // TODO: replace this with custom coding logic to replace it with a simple array
 
 }

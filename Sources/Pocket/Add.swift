@@ -31,7 +31,7 @@ extension Pocket {
     private struct AddResponse: Decodable {
 
         public let item: AddedItem
-        public let status: String
+        public let status: Int
 
     }
 
