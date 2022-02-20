@@ -9,23 +9,37 @@
 import Foundation
 
 
-public struct StringBool: Codable, ExpressibleByBooleanLiteral {
+public struct StringBool {
 
     private let value: Bool
 
-    // MARK: ExpressibleByBooleanLiteral
+}
+
+// MARK: - ExpressibleByBooleanLiteral
+
+extension StringBool: ExpressibleByBooleanLiteral {
 
     public init(booleanLiteral value: BooleanLiteralType) {
         self.value = value
     }
 
-    // MARK: Codable
+}
+
+// MARK: - Decodable
+
+extension StringBool: Decodable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let stringValue = try container.decode(String.self)
         value = stringValue == "1"
     }
+
+}
+
+// MARK: - Encodable
+
+extension StringBool: Encodable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()

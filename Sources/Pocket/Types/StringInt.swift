@@ -25,6 +25,14 @@ extension StringInt: ExpressibleByStringLiteral {
 
 }
 
+extension StringInt: CustomStringConvertible {
+
+    public var description: String {
+        "\(value)"
+    }
+
+}
+
 // MARK: - Decodable
 
 extension StringInt: Decodable {
