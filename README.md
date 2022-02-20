@@ -47,7 +47,7 @@ Use this to save and restore the token for future uses.
 ```swift
 let parameters = Pocket.AddParameters(url: url)
 // add parameters by configuring the AddParameters object
-try await pocket.add(with: parameters)
+try await pocket.add(item: parameters)
 ```
 
 ### Retrieve items from the queue
@@ -62,7 +62,7 @@ let items = try await pocket.retrieve(with: parameters)
 
 ```swift
 let itemId = 123
-try await pocket.archive(itemId: itemId)
+try await pocket.archive(itemIds: [itemId])
 ```
 
 ## Installation
@@ -70,7 +70,7 @@ try await pocket.archive(itemId: itemId)
 Using the Swift Package Manager, add this line to your `Package.swift` as a dependency:
 
 ```swift
-    .package(url: "https://github.com/sgade/swift-pocket", from: "0.3.0"),
+    .package(url: "https://github.com/sgade/swift-pocket", from: "1.0.0"),
 ```
 
 ## License
