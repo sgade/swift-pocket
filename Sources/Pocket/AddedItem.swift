@@ -176,22 +176,22 @@ public struct AddedItem: Decodable {
     /// True, if the parser thinks this item is an article.
     public let isArticle: StringBool
 
-    private let authorList: ObjectList<Author>
+    private let authorList: ObjectList<Author>?
     /// All of the authors associated with the item.
     public var authors: [Author] {
-        authorList.values
+        authorList?.values ?? []
     }
 
-    private let imageList: ObjectList<Image>
+    private let imageList: ObjectList<Image>?
     /// All of the images associated with the item.
     public var images: [Image] {
-        imageList.values
+        imageList?.values ?? []
     }
 
-    private let videoList: ObjectList<Video>
+    private let videoList: ObjectList<Video>?
     /// All of the videos associated with the item.
     public var videos: [Video] {
-        videoList.values
+        videoList?.values ?? []
     }
 
 }
