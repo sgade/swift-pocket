@@ -53,16 +53,11 @@ extension Pocket {
             }
             guard httpResponse.statusCode == 200 else {
                 // see https://getpocket.com/developer/docs/errors
-                switch httpResponse.statusCode {
-                case 503:
-                    return completion(.failure(Errors.serverDownForMaintenance))
-                default:
-                    let errorCode = Int(httpResponse.value(forHTTPHeaderField: "X-Error-Code") ?? "") ?? 0
-                    let message = httpResponse.value(forHTTPHeaderField: "X-Error")
-                    return completion(.failure(Errors.response(status: httpResponse.statusCode,
-                                                               code: errorCode,
-                                                               message: message ?? "")))
-                }
+                let errorCode = Int(httpResponse.value(forHTTPHeaderField: "X-Error-Code") ?? "") ?? 0
+                let message = httpResponse.value(forHTTPHeaderField: "X-Error") ?? ""
+                return completion(.failure(self.error(for: httpResponse.statusCode,
+                                                         errorCode: errorCode,
+                                                         message: message)))
             }
 
             do {
@@ -73,6 +68,18 @@ extension Pocket {
             }
         }
         task.resume()
+    }
+
+    private func error(for statusCode: Int, errorCode: Int, message: String) -> Error {
+        switch statusCode {
+        case 400: return Errors.invalidRequest(code: errorCode, message: message)
+        case 401: return Errors.authenticationFailed(code: errorCode, message: message)
+        case 403: return Errors.lackingPermission(code: errorCode, message: message)
+        case 503: return Errors.serverDownForMaintenance
+        default:  return Errors.errorResponse(status: statusCode,
+                                              code: errorCode,
+                                              message: message)
+        }
     }
 
     func requestAuthenticated<T: Decodable>(url: URL, data: [String: String], completion: @escaping (Result<T, Error>) -> Void) {
