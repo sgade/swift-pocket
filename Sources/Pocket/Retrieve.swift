@@ -95,6 +95,7 @@ extension Pocket {
         // MARK: Custom parse logic
 
         private struct ItemList: Decodable {
+
             let values: [Item]
 
             init(from decoder: Decoder) throws {
@@ -103,11 +104,17 @@ extension Pocket {
                     // if we have items, they are returned in a dictionary...
                     let dict = try container.decode([String: Item].self)
                     values = dict.map { $0.value }
-                } catch {
+                } catch DecodingError.typeMismatch(let type, let context) {
                     // ...however, if there are no items, the field type is (empty) array
+                    guard type == [String: Item].self else {
+                        // throw error if not for this specfic type
+                        throw DecodingError.typeMismatch(type, context)
+                    }
+
                     values = (try? container.decode([Item].self)) ?? []
                 }
             }
+
         }
 
         private let list: ItemList
