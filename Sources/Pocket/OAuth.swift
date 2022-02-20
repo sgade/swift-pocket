@@ -38,6 +38,12 @@ extension Pocket {
 
 extension Pocket {
 
+    public func obtainRequestToken(forRedirectingTo redirectUrl: URL) async throws -> String {
+        try await withCheckedThrowingContinuation { continuation in
+            obtainRequestToken(forRedirectingTo: redirectUrl, completion: continuation.resume)
+        }
+    }
+
     public func obtainRequestToken(forRedirectingTo redirectUrl: URL, completion: @escaping (Result<String, Error>) -> Void) {
         let data = [
             "consumer_key": consumerKey,
@@ -62,6 +68,12 @@ extension Pocket {
             URLQueryItem(name: "redirect_uri", value: redirectUrl.absoluteString)
         ]
         return requestUrlComponents.url!
+    }
+
+    public func obtainAccessToken(for requestToken: String) async throws -> String {
+        try await withCheckedThrowingContinuation { continuation in
+            obtainAccessToken(for: requestToken, completion: continuation.resume)
+        }
     }
 
     public func obtainAccessToken(for requestToken: String, completion: @escaping (Result<String, Error>) -> Void) {

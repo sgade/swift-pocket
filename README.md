@@ -11,6 +11,10 @@ You can start using the package by creating a new `Pocket` instance and passing 
 let pocket = Pocket(consumerKey: "...")
 ```
 
+### Note on asynchronous functions
+
+All asynchronous calls implement Swift's async/await feature. There are also callback-based implementations available. 
+
 ### Authorization
 
 The instance needs to be authenticated with the user's account. This is done via the user's consent in the browser.
@@ -22,13 +26,13 @@ The instance needs to be authenticated with the user's account. This is done via
 
 ```swift
 // (1)
-let requestToken = try pocket.obtainRequestToken(forRedirectingTo: redirectUrl)
+let requestToken = try await pocket.obtainRequestToken(forRedirectingTo: redirectUrl)
 // (2)
 // Listen on your redirectUrl, e.g. "http://localhost:44444/callback" using a local webserver
 // (3)
 let authorizationUrl = pocket.buildAuthorizationUrl(for: requestToken, redirectingTo: redirectUrl)
 // (4)
-let accessToken = try pocket.obtainAccessToken(for: requestToken)
+let accessToken = try await pocket.obtainAccessToken(for: requestToken)
 ```
 
 Using that instance, you can invoke actions against the api.
@@ -43,7 +47,7 @@ Use this to save and restore the token for future uses.
 ```swift
 let parameters = Pocket.AddParameters(url: url)
 // add parameters by configuring the AddParameters object
-try pocket.add(with: parameters)
+try await pocket.add(with: parameters)
 ```
 
 ### Retrieve items from the queue
@@ -51,14 +55,14 @@ try pocket.add(with: parameters)
 ```swift
 let parameters = Pocket.RetrieveParameters()
 // change filter options by configuring the RetrieveParameters object
-let items = try pocket.retrieve(with: parameters)
+let items = try await pocket.retrieve(with: parameters)
 ```
 
 ### Archive item from the queue
 
 ```swift
 let itemId = 123
-try pocket.archive(itemId: itemId)
+try await pocket.archive(itemId: itemId)
 ```
 
 ## Installation
@@ -66,7 +70,7 @@ try pocket.archive(itemId: itemId)
 Using the Swift Package Manager, add this line to your `Package.swift` as a dependency:
 
 ```swift
-    .package(url: "https://github.com/sgade/swift-pocket", from: "1.0.0"),
+    .package(url: "https://github.com/sgade/swift-pocket", from: "0.3.0"),
 ```
 
 ## License
