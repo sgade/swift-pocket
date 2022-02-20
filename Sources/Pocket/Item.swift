@@ -29,9 +29,9 @@ public struct Item: Decodable {
         case hasImage       = "has_image"
         case hasVideo       = "has_video"
         case wordCount      = "word_count"
-        case authors
-        case images
-        case videos
+        case authorList     = "authors"
+        case imageList      = "images"
+        case videoList      = "videos"
 
     }
 
@@ -159,13 +159,22 @@ public struct Item: Decodable {
     /// How many words are in the article.
     public let wordCount: StringInt
 
+    private let authorList: ObjectList<Author>
     /// All of the authors associated with the item.
-    public let authors: ObjectList<Author> // TODO: replace this with custom coding logic to replace it with a simple array
+    public var authors: [Author] {
+        authorList.values
+    }
 
+    private let imageList: ObjectList<Image>
     /// All of the images associated with the item.
-    public let images: ObjectList<Image> // TODO: replace this with custom coding logic to replace it with a simple array
+    public var images: [Image] {
+        imageList.values
+    }
 
+    private let videoList: ObjectList<Video>
     /// All of the videos associated with the item.
-    public let videos: ObjectList<Video> // TODO: replace this with custom coding logic to replace it with a simple array
+    public var videos: [Video] {
+        videoList.values
+    }
 
 }

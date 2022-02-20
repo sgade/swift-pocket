@@ -35,9 +35,9 @@ public struct AddedItem: Decodable {
         case hasVideo       = "has_video"
         case isIndex        = "is_index"
         case isArticle      = "is_article"
-        case authors
-        case images
-        case videos
+        case authorList     = "authors"
+        case imageList      = "images"
+        case videoList      = "videos"
 
     }
 
@@ -175,13 +175,22 @@ public struct AddedItem: Decodable {
     /// True, if the parser thinks this item is an article.
     public let isArticle: StringBool
 
+    private let authorList: ObjectList<Author>
     /// All of the authors associated with the item.
-    public let authors: ObjectList<Author> // TODO: replace this with custom coding logic to replace it with a simple array
+    public var authors: [Author] {
+        authorList.values
+    }
 
+    private let imageList: ObjectList<Image>
     /// All of the images associated with the item.
-    public let images: ObjectList<Image> // TODO: replace this with custom coding logic to replace it with a simple array
+    public var images: [Image] {
+        imageList.values
+    }
 
+    private let videoList: ObjectList<Video>
     /// All of the videos associated with the item.
-    public let videos: ObjectList<Video> // TODO: replace this with custom coding logic to replace it with a simple array
+    public var videos: [Video] {
+        videoList.values
+    }
 
 }
