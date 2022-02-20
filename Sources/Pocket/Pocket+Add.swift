@@ -44,13 +44,13 @@ extension Pocket {
 extension Pocket {
 
     @discardableResult
-    public func add(with parameters: AddParameters) async throws -> AddedItem {
+    public func add(item parameters: AddParameters) async throws -> AddedItem {
         try await withCheckedThrowingContinuation { continuation in
-            add(with: parameters, completion: continuation.resume)
+            add(item: parameters, completion: continuation.resume)
         }
     }
 
-    public func add(with parameters: AddParameters, completion: @escaping (Result<AddedItem, Error>) -> Void) {
+    public func add(item parameters: AddParameters, completion: @escaping (Result<AddedItem, Error>) -> Void) {
         guard let escapedUrl = parameters.url
                 .absoluteString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
         else {
