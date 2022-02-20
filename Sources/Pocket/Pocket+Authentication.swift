@@ -8,7 +8,7 @@
 
 import Foundation
 
-// MARK: - Serialization data structures
+// MARK: Serialization data structures
 
 extension Pocket {
 

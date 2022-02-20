@@ -8,7 +8,7 @@
 
 import Foundation
 
-// MARK: - Serialization data structures
+// MARK: Serialization data structures
 
 extension Pocket {
 
@@ -33,7 +33,7 @@ extension Pocket {
     private struct AddResponse: Decodable {
 
         public let item: AddedItem
-        public let status: Int
+        public let status: Status
 
     }
 

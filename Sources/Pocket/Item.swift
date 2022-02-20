@@ -11,7 +11,8 @@ import Foundation
 
 /// An item from the Pocket queue.
 ///
-/// The documentation and item setup is taken from the [Pocket developer documentation](https://getpocket.com/developer/docs/v3/retrieve).
+/// The documentation and item setup is taken from
+/// the [Pocket developer documentation](https://getpocket.com/developer/docs/v3/retrieve).
 public struct Item: Decodable {
 
     private enum CodingKeys: String, CodingKey {
