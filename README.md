@@ -11,10 +11,6 @@ You can start using the package by creating a new `Pocket` instance and passing 
 let pocket = Pocket(consumerKey: "...")
 ```
 
-### Note on asynchronous functions
-
-All asynchronous calls implement Swift's async/await feature. There are also callback-based implementations available. 
-
 ### Authorization
 
 The instance needs to be authenticated with the user's account. This is done via the user's consent in the browser.

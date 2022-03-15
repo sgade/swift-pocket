@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.0
+
+### Changed
+
+- Using async/await exclusively. This requires macOS 12.0 and iOS 15.0.
+
 ## 1.0.0
 
 ### Added

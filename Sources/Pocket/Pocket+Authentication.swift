@@ -42,25 +42,13 @@ extension Pocket {
 extension Pocket {
 
     public func obtainRequestToken(forRedirectingTo redirectUrl: URL) async throws -> String {
-        try await withCheckedThrowingContinuation { continuation in
-            obtainRequestToken(forRedirectingTo: redirectUrl, completion: continuation.resume)
-        }
-    }
-
-    public func obtainRequestToken(forRedirectingTo redirectUrl: URL, completion: @escaping (Result<String, Error>) -> Void) {
         let data = [
             "consumer_key": consumerKey,
             "redirect_uri": redirectUrl.absoluteString
         ]
 
-        request(url: Pocket.requestTokenUrl, jsonData: data) { (result: Result<ObtainRequestTokenResponse, Error>) in
-            switch result {
-            case .success(let response):
-                return completion(.success(response.code))
-            case .failure(let error):
-                return completion(.failure(error))
-            }
-        }
+        let response: ObtainRequestTokenResponse = try await request(url: Pocket.requestTokenUrl, jsonData: data)
+        return response.code
     }
 
     public func buildAuthorizationUrl(for requestToken: String, redirectingTo redirectUrl: URL) -> URL? {
@@ -76,27 +64,15 @@ extension Pocket {
     }
 
     public func obtainAccessToken(for requestToken: String) async throws -> String {
-        try await withCheckedThrowingContinuation { continuation in
-            obtainAccessToken(for: requestToken, completion: continuation.resume)
-        }
-    }
-
-    public func obtainAccessToken(for requestToken: String, completion: @escaping (Result<String, Error>) -> Void) {
         let data = [
             "consumer_key": consumerKey,
             "code": requestToken
         ]
 
-        request(url: Pocket.authorizeUrl, jsonData: data) { (result: Result<ObtainAccessTokenResponse, Error>) in
-            switch result {
-            case .success(let response):
-                self.accessToken = response.accessToken
-                self.username = response.username
-                return completion(.success(response.accessToken))
-            case .failure(let error):
-                return completion(.failure(error))
-            }
-        }
+        let response: ObtainAccessTokenResponse = try await request(url: Pocket.authorizeUrl, jsonData: data)
+        accessToken = response.accessToken
+        username = response.username
+        return response.accessToken
     }
 
 }

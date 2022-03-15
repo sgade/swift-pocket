@@ -114,12 +114,6 @@ extension Pocket {
 extension Pocket {
 
     public func retrieve(with parameters: RetrieveParameters) async throws -> [Item] {
-        try await withCheckedThrowingContinuation { continuation in
-            retrieve(with: parameters, completion: continuation.resume)
-        }
-    }
-
-    public func retrieve(with parameters: RetrieveParameters, completion: @escaping (Result<[Item], Error>) -> Void) {
         var data: [String: String] = [:]
         data["detailType"] = parameters.detailType?.rawValue ?? RetrieveParameters.DetailType.complete.rawValue
 
@@ -166,14 +160,8 @@ extension Pocket {
             data["offset"] = "\(offset)"
         }
 
-        requestAuthenticated(url: Pocket.retrieveUrl, data: data) { (result: Result<GetResponse, Error>) in
-            switch result {
-            case .success(let response):
-                completion(.success(response.items))
-            case .failure(let error):
-                completion(.failure(error))
-            }
-        }
+        let response: GetResponse = try await requestAuthenticated(url: Pocket.retrieveUrl, data: data)
+        return response.items
     }
 
 }

@@ -45,16 +45,10 @@ extension Pocket {
 
     @discardableResult
     public func add(item parameters: AddParameters) async throws -> AddedItem {
-        try await withCheckedThrowingContinuation { continuation in
-            add(item: parameters, completion: continuation.resume)
-        }
-    }
-
-    public func add(item parameters: AddParameters, completion: @escaping (Result<AddedItem, Error>) -> Void) {
         guard let escapedUrl = parameters.url
                 .absoluteString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
         else {
-            return completion(.failure(Errors.invalid(value: parameters.url, parameter: "url")))
+            throw Errors.invalid(value: parameters.url, parameter: "url")
         }
 
         var data = [
@@ -70,14 +64,8 @@ extension Pocket {
             data["tweet_id"] = tweetId
         }
 
-        requestAuthenticated(url: Pocket.addUrl, data: data) { (result: Result<AddResponse, Error>) in
-            switch result {
-            case .success(let response):
-                return completion(.success(response.item))
-            case .failure(let error):
-                return completion(.failure(error))
-            }
-        }
+        let response: AddResponse = try await requestAuthenticated(url: Pocket.addUrl, data: data)
+        return response.item
     }
 
 }
