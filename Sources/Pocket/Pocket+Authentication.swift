@@ -13,7 +13,8 @@ import Foundation
 extension Pocket {
 
     public static let requestTokenUrl = URL(string: "https://getpocket.com/v3/oauth/request")!
-    public static let authorizeUrl = URL(string: "https://getpocket.com/v3/oauth/authorize")!
+    public static let authorizeUrl = URL(string: "https://getpocket.com/auth/authorize")!
+    public static let accessTokenUrl = URL(string: "https://getpocket.com/v3/oauth/authorize")!
 
     private struct ObtainRequestTokenResponse: Decodable {
 
@@ -69,7 +70,7 @@ extension Pocket {
             "code": requestToken
         ]
 
-        let response: ObtainAccessTokenResponse = try await request(url: Pocket.authorizeUrl, jsonData: data)
+        let response: ObtainAccessTokenResponse = try await request(url: Pocket.accessTokenUrl, jsonData: data)
         accessToken = response.accessToken
         username = response.username
         return response.accessToken
